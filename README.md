@@ -7,7 +7,7 @@ A few lines of Ansible instantiating a Docker Swarm Cluster
 - Virtualbox { this was tested only with Virtualbox }
 - Ansible
 
-##Usagee:
+##Usage:
 
 ``` vagrant up ```
 will result with 4 instances of ubutntu 14.04
