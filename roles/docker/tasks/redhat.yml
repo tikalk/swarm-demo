@@ -1,0 +1,40 @@
+
+- name: Install python setup tools
+  yum: name=python-setuptools
+  tags: docker
+
+- name: Install pip
+  easy_install: name=pip
+  tags: docker
+
+- name: Install docker-py
+  pip: 
+      name=docker-py 
+      state=present
+      version=1.2.3
+  tags: docker
+
+- name: Add docker repo
+  copy: src=docker.centos.repo 
+        dest=/etc/yum.repos.d/docker.repo
+
+- name: Install Docker
+  yum: name=docker-engine 
+       state=latest
+  tags: docker
+  
+- name: Add user(s) to docker group
+  user: 
+      name={{ item }} 
+      group=docker 
+      state=present
+  with_items: "{{ docker_users }}"
+  when: docker_users is defined
+
+- name: Configure Docker
+  template: src=docker-swarm-{{ swarm_type }}.service 
+            dest=XXX
+            mode=0644 
+            owner=root 
+            group=root
+  notify: restart docker

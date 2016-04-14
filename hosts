@@ -1,0 +1,29 @@
+[all:vars]
+consul_master_ip=192.168.2.2
+registry_flag=
+#registry_flag="--insecure-registry x.x.x.x:5000"
+
+[swarm-master]
+192.168.2.2
+
+[swarm-master:vars]
+ansible_ssh_private_key_file="{{ playbook_dir }}/.vagrant/machines/server1/virtualbox/private_key"
+ssh_user=vagrant
+docker_users=vagrant
+swarm_type=master
+swarm_master=true
+node_role=swarm-manager
+consul_extra="-server -bootstrap -ui-dir /ui"
+docker_opts="-H unix:///var/run/docker.sock --cluster-store=consul://{{ consul_master_ip }}:8500 --cluster-advertise=eth0:2375 --label role={{ node_role }} {{ registry_flag }}"
+
+[swarm-nodes]
+192.168.2.3 node_role=db ansible_ssh_private_key_file="{{ playbook_dir }}/.vagrant/machines/server2/virtualbox/private_key"
+192.168.2.4 node_role=master ansible_ssh_private_key_file="{{ playbook_dir }}/.vagrant/machines/server3/virtualbox/private_key"
+192.168.2.5 node_role=slave ansible_ssh_private_key_file="{{ playbook_dir }}/.vagrant/machines/server4/virtualbox/private_key"
+
+[swarm-nodes:vars]
+ssh_user=vagrant
+docker_users=vagrant
+swarm_type=node
+consul_extra="-join {{ consul_master_ip }}"
+docker_opts="-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --cluster-store=consul://{{ consul_master_ip }}:8500 --cluster-advertise=eth0:2375 {{ registry_flag }} --label role={{ node_role }}"

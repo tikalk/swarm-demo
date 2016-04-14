@@ -1,0 +1,14 @@
+- hosts: "swarm-master:swarm-nodes"
+  remote_user: "{{ ssh_user }}"
+  serial: 1
+  become: yes
+  vars:
+    install: true
+  roles:
+    - common
+    - docker
+    - consul
+    - swarm
+    - registrator
+    
+

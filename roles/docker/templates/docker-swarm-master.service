@@ -1,0 +1,20 @@
+[Unit]
+Description=Docker Application Container Engine
+Documentation=https://docs.docker.com
+After=network.target docker.socket
+Requires=docker.socket
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/docker
+Type=notify
+ExecStart=/usr/bin/docker daemon -H fd:// \
+          --cluster-store=consul://{{ consul_master_ip }}:8500 \
+          --cluster-advertise=eth0:2375 {{ registry_flag }}
+MountFlags=slave
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
+
+[Install]
+WantedBy=multi-user.target
+

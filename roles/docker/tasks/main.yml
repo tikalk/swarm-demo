@@ -1,0 +1,17 @@
+---
+
+- include: redhat.yml
+  when: ansible_os_family == "RedHat"
+
+- include: ubuntu.yml
+  when: ansible_distribution == "Ubuntu" 
+
+- name: Be sure docker is running and enabled
+  service: name=docker state=running enabled=yes
+  tags: docker
+  
+- name: Install docker-compose
+  pip: 
+    name=docker-compose 
+    state=latest
+  tags: docker

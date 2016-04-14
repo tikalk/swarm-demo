@@ -1,0 +1,9 @@
+- hosts: "swarm-master:swarm-nodes"
+  remote_user: "{{ ssh_user }}"
+  tasks:
+    - command: docker ps -a -q
+      register: containers
+    - debug: msg="containers is {{ containers.stdout_lines }}"
+    - command: docker rm -f {{ item }}
+      with_items: "{{ containers.stdout_lines }}"
+
